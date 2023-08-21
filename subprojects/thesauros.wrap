@@ -1,0 +1,7 @@
+[wrap-git]
+url = git@github.com:KurtBoehm/thesauros.git
+revision = head
+clone-recursive = true
+
+[provide]
+thesauros = thesauros_dep
