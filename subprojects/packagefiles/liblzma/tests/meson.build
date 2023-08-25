@@ -7,7 +7,7 @@ liblzma_tests = [
   'test_stream_flags',
 ]
 
-tinc = [include_directories('../src/common'), confinc]
+tinc = [include_directories('../src/common', '../src/liblzma'), confinc]
 
 foreach t : liblzma_tests
   test(
