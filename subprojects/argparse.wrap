@@ -1,0 +1,9 @@
+[wrap-file]
+directory = argparse-2.9
+source_url = https://github.com/p-ranav/argparse/archive/refs/tags/v2.9.tar.gz
+source_filename = argparse-2.9.tar.gz
+source_hash = cd563293580b9dc592254df35b49cf8a19b4870ff5f611c7584cf967d9e6031e
+patch_directory = argparse
+
+[provide]
+argparse = argparse_dep

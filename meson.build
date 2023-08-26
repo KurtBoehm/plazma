@@ -20,6 +20,8 @@ pc.generate(
   description: 'LZMA library wrapper',
 )
 
+subdir('tools')
+
 if get_option('test')
   subdir('test')
 endif

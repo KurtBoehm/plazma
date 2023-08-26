@@ -33,6 +33,9 @@ int main(int /*argc*/, const char* const* const argv) {
 
   THES_ASSERT(md_str == xz_str);
 
+  THES_ASSERT(xz_reader.size() == 92172);
+  THES_ASSERT(xz_reader.uncompressed_size() == 147251);
+
   for (std::size_t thread_num = 1; thread_num <= 8; ++thread_num) {
     std::cout << thread_num << '\n';
     std::string str(xz_size + 1, '\0');

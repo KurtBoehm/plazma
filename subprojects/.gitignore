@@ -2,6 +2,7 @@
 
 /packagecache/
 
+/argparse-*/
 /expected-*/
 /preprocessor-boost-*/
 /xz-*/
