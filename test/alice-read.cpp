@@ -9,8 +9,7 @@
 #include "thesauros/test.hpp"
 #include "thesauros/utility.hpp"
 
-#include "plazma/base.hpp"
-#include "plazma/decode.hpp"
+#include "plazma/plazma.hpp"
 
 int main(int /*argc*/, const char* const* const argv) {
   const auto base_path = std::filesystem::canonical(std::filesystem::path{argv[0]}.parent_path());
@@ -23,7 +22,7 @@ int main(int /*argc*/, const char* const* const argv) {
   thes::FileReader md_reader{md_path};
   const auto md_size = md_reader.size();
   std::string md_str(md_size + 1, '\0');
-  md_reader.pread(md_str.data(), md_size, 0);
+  md_reader.pread(std::span{md_str.data(), md_size}, 0);
 
   plazma::Reader xz_reader{xz_path};
   std::cout << "block count: " << xz_reader.block_count() << '\n';

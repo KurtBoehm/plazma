@@ -10,5 +10,6 @@
 #include "decode/decode.hpp" // IWYU pragma: export
 #include "decode/read-index.hpp" // IWYU pragma: export
 #include "decode/reader.hpp" // IWYU pragma: export
+#include "encode/writer.hpp" // IWYU pragma: export
 
 #endif // INCLUDE_PLAZMA_PLAZMA_HPP

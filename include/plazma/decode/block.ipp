@@ -1,6 +1,8 @@
 #ifndef INCLUDE_PLAZMA_DECODE_BLOCK_IPP
 #define INCLUDE_PLAZMA_DECODE_BLOCK_IPP
 
+#include <span>
+
 #include <lzma.h>
 
 #include "thesauros/containers.hpp"
@@ -26,7 +28,7 @@ void Block::decompress(thes::DynamicBuffer& scratch, thes::DynamicBuffer& out) {
   reader_.pread(header, 1, static_cast<long>(coff()));
   block.header_size = lzma_block_header_size_decode(header[0]);
   header.resize(block.header_size);
-  reader_.pread(header.data() + 1, block.header_size - 1, static_cast<long>(coff()) + 1);
+  reader_.pread(std::span{header.data() + 1, block.header_size - 1}, static_cast<long>(coff()) + 1);
 
   lzma_ret err = lzma_block_header_decode(&block, nullptr, header.data_u8());
   if (err == LZMA_OPTIONS_ERROR) {

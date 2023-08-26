@@ -65,7 +65,7 @@ struct Reader : public thes::FileReader {
   explicit Reader(const std::filesystem::path& path)
       : thes::FileReader(path), index_([this] {
           thes::DynamicBuffer header(LZMA_STREAM_HEADER_SIZE);
-          read(header.data(), LZMA_STREAM_HEADER_SIZE);
+          read(std::span{header.data(), LZMA_STREAM_HEADER_SIZE});
 
           lzma_stream_flags flags;
           lzma_ret ret = lzma_stream_header_decode(&flags, header.data_u8());

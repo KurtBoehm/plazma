@@ -7,7 +7,8 @@ foreach name : ['alice.md', 'alice.md.xz']
 endforeach
 
 foreach name, info : {
-  'Alice': [['alice.cpp'], []],
+  'AliceRead': [['alice-read.cpp'], []],
+  'AliceWrite': [['alice-write.cpp'], []],
 }
   sources = info[0]
   deps = info[1]
