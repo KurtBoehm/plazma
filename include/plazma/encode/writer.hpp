@@ -16,7 +16,8 @@
 namespace plazma {
 // Based on doc/04_compress_easy_mt.c
 struct Writer : public thes::FileWriter {
-  explicit Writer(const std::filesystem::path& path) : thes::FileWriter(path) {
+  explicit Writer(const std::filesystem::path& path, std::uint32_t thread_num)
+      : thes::FileWriter(path) {
     // bool success = init_encoder(&strm_);
     // The threaded encoder takes the options as pointer to
     // a lzma_mt structure.
@@ -24,12 +25,7 @@ struct Writer : public thes::FileWriter {
       // No flags are needed.
       .flags = 0,
 
-      // Detect how many threads the CPU supports.
-      // If the number of CPU cores/threads cannot be detected,
-      // use one thread. Note that this isn't the same as the normal
-      // single-threaded mode as this will still split the data into
-      // blocks and use more RAM than the normal single-threaded mode.
-      .threads = std::max(lzma_cputhreads(), std::uint32_t{1}),
+      .threads = thread_num,
 
       // Let liblzma determine a sane block size.
       .block_size = 0,
