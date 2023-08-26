@@ -20,7 +20,7 @@ int main(int /*argc*/, const char* const* const argv) {
   md_reader.pread(std::span{md_str.data(), md_size}, 0);
 
   {
-    plazma::Writer xz_writer{xz_path, 8};
+    plazma::Writer xz_writer{xz_path};
     xz_writer.write(std::span{std::as_const(md_str).data(), md_size});
   }
 

@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <filesystem>
+#include <optional>
 #include <span>
 #include <utility>
 
@@ -16,7 +17,8 @@
 namespace plazma {
 // Based on doc/04_compress_easy_mt.c
 struct Writer : public thes::FileWriter {
-  explicit Writer(const std::filesystem::path& path, std::uint32_t thread_num)
+  explicit Writer(const std::filesystem::path& path, std::optional<std::uint64_t> block_size = {},
+                  std::optional<std::uint32_t> thread_num = {})
       : thes::FileWriter(path) {
     // bool success = init_encoder(&strm_);
     // The threaded encoder takes the options as pointer to
@@ -25,10 +27,15 @@ struct Writer : public thes::FileWriter {
       // No flags are needed.
       .flags = 0,
 
-      .threads = thread_num,
+      // Detect how many threads the CPU supports.
+      // If the number of CPU cores/threads cannot be detected,
+      // use one thread. Note that this isn't the same as the normal
+      // single-threaded mode as this will still split the data into
+      // blocks and use more RAM than the normal single-threaded mode.
+      .threads = thread_num.value_or(std::max(lzma_cputhreads(), std::uint32_t{1})),
 
       // Let liblzma determine a sane block size.
-      .block_size = 0,
+      .block_size = block_size.value_or(0),
 
       // Use no timeout for lzma_code() calls by setting timeout
       // to zero. That is, sometimes lzma_code() might block for
