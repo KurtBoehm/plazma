@@ -20,6 +20,19 @@ struct Writer : public thes::FileWriter {
   explicit Writer(const std::filesystem::path& path, std::optional<std::uint64_t> block_size = {},
                   std::optional<std::uint32_t> thread_num = {})
       : thes::FileWriter(path) {
+    const int preset = 9;
+    // Options for LZMA1 or LZMA2 in case we are using a preset.
+    lzma_options_lzma opt_lzma;
+    lzma_lzma_preset(&opt_lzma, preset);
+
+    // Use an LZMA2 filter with the given preset.
+    std::array<lzma_filter, LZMA_FILTERS_MAX + 1> filters{};
+    filters[0].id = LZMA_FILTER_LZMA2;
+    filters[0].options = &opt_lzma;
+
+    // Terminate the filter options array.
+    filters[1].id = LZMA_VLI_UNKNOWN;
+
     // bool success = init_encoder(&strm_);
     // The threaded encoder takes the options as pointer to
     // a lzma_mt structure.
@@ -46,10 +59,9 @@ struct Writer : public thes::FileWriter {
       // information how to choose a reasonable timeout.
       .timeout = 0,
 
-      // Use the highest preset (9).
-      // To use a preset, filters must be set to nullptr.
-      .preset = 9,
-      .filters = nullptr,
+      // Use the filters defined above.
+      .preset = 0,
+      .filters = filters.data(),
 
       // Use CRC64 for integrity checking.
       .check = LZMA_CHECK_CRC64,
