@@ -190,7 +190,7 @@ struct Writer : public thes::FileWriter {
         // possible values. Most values listen in lzma_ret
         // enumeration aren't possible in this example.
         switch (ret) {
-        case LZMA_MEM_ERROR: throw Exception("Memory allocation failed"); break;
+        case LZMA_MEM_ERROR: throw Exception("Memory allocation failed");
         case LZMA_DATA_ERROR:
           // This error is returned if the compressed
           // or uncompressed size get near 8 EiB
@@ -205,8 +205,6 @@ struct Writer : public thes::FileWriter {
           // those variables won't increase or decrease
           // the chance of getting this error.
           throw Exception("File size limits exceeded");
-          break;
-
         default:
           // This is most likely LZMA_PROG_ERROR, but
           // if this program is buggy (or liblzma has
@@ -220,7 +218,6 @@ struct Writer : public thes::FileWriter {
           // it is good to print the error code at least
           // when there is no good error message to show.
           throw Exception("Unknown error ", ret, ", possibly a bug");
-          break;
         }
       }
     }
