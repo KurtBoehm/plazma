@@ -1,5 +1,5 @@
 options_sub = subproject('options')
-opts = options_sub.get_variable('all_opts')
+opts = []
 args = options_sub.get_variable('all_args')
 
 foreach name : ['alice.md', 'alice.md.xz']
