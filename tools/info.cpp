@@ -45,9 +45,13 @@ int main(int argc, const char** argv) {
     plazma::Reader reader(p);
     const auto csize = reader.size();
     const auto usize = reader.uncompressed_size();
+    const auto block_count = reader.block_count();
     const auto ratio = double(usize) / double(csize);
 
-    std::cout << p << " ratio: " << usize << "/" << csize << " → " << ratio << '\n';
+    std::cout << p << ":\n";
+    std::cout << "block count: " << block_count << '\n';
+    std::cout << "ratio: " << usize << "/" << csize << " → " << ratio << '\n';
+
     ratio_sum += ratio;
   }
   std::cout << "average ratio: " << ratio_sum / double(args.paths.size()) << '\n';

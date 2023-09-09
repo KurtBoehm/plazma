@@ -9,7 +9,7 @@ args = (
 argparse_dep = dependency('argparse')
 
 foreach name, info : {
-  'CompressionRatio': [['compression-ratio.cpp'], []],
+  'Info': [['info.cpp'], []],
 }
   sources = info[0]
   deps = info[1]
