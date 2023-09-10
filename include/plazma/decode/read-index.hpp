@@ -57,7 +57,7 @@ inline lzma_index* read_index(thes::FileReader& fh) {
     fh.read(buf, LZMA_STREAM_HEADER_SIZE);
     lzma_ret err = lzma_stream_footer_decode(&flags, buf.data_u8());
     if (err != LZMA_OK) {
-      throw Exception("bad footer");
+      throw Exception("Bad Footer");
     }
     long npos = fh.tell();
 
