@@ -8,6 +8,7 @@
 #include <filesystem>
 #include <optional>
 #include <span>
+#include <type_traits>
 
 #include <lzma.h>
 
@@ -20,11 +21,11 @@ struct Writer : public thes::FileWriter {
   static constexpr std::size_t io_buffer_size = (BUFSIZ <= 1024) ? 8192 : (BUFSIZ & ~7U);
   using IoBuf = std::array<uint8_t, io_buffer_size>;
 
-  explicit Writer(const std::filesystem::path& path, const std::optional<thes::u32> preset = {},
+  explicit Writer(const std::filesystem::path& dst_path, const std::optional<thes::u32> preset = {},
                   std::optional<thes::u64> block_size = {},
                   std::optional<thes::u32> thread_num = {})
-      : thes::FileWriter(path) {
-    lzma_options_lzma opt_lzma;
+      : thes::FileWriter(dst_path) {
+    lzma_options_lzma opt_lzma{};
     if (lzma_lzma_preset(&opt_lzma, preset.value_or(LZMA_PRESET_DEFAULT)) != 0) {
       throw Exception("Getting preset failed!");
     }
@@ -58,22 +59,14 @@ struct Writer : public thes::FileWriter {
   }
 
   template<typename T>
-  requires std::is_trivial_v<T>
-  void write(std::span<const T> span) {
-    IoBuf outbuf{};
-    strm_.next_in = nullptr;
-    strm_.avail_in = 0;
-    strm_.next_out = outbuf.data();
-    strm_.avail_out = outbuf.size();
-
-    const auto* current = reinterpret_cast<const std::uint8_t*>(span.data());
+  requires std::is_trivial_v<std::remove_const_t<T>>
+  void write(std::span<T> span) {
+    const auto* current = reinterpret_cast<const thes::u8*>(span.data());
     const auto* end = current + span.size();
+    IoBuf out_buf{};
+    strm_.next_out = out_buf.data();
+    strm_.avail_out = out_buf.size();
 
-    // Encoder needs to know when we have given all the input to it.
-    // The decoders need to know it too when we are using
-    // LZMA_CONCATENATED. We need to check for src_eof here, because
-    // the first input chunk has been already read if decompressing,
-    // and that may have been the only chunk we will read.
     lzma_action action = (current == end) ? LZMA_FINISH : LZMA_RUN;
 
     while (true) {
@@ -88,13 +81,12 @@ struct Writer : public thes::FileWriter {
         }
       }
 
-      lzma_ret ret = lzma_code(&strm_, action);
+      const lzma_ret ret = lzma_code(&strm_, action);
 
       if (strm_.avail_out == 0 || ret == LZMA_STREAM_END) {
-        const auto write_size = outbuf.size() - strm_.avail_out;
-        thes::FileWriter::write(std::span{outbuf.data(), write_size});
-        strm_.next_out = outbuf.data();
-        strm_.avail_out = outbuf.size();
+        thes::FileWriter::write(std::span{out_buf.data(), out_buf.size() - strm_.avail_out});
+        strm_.next_out = out_buf.data();
+        strm_.avail_out = out_buf.size();
       }
 
       if (ret == LZMA_STREAM_END && current == end) {
