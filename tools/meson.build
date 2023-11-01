@@ -14,14 +14,11 @@ foreach name, info : {
 }
   sources = info[0]
   deps = info[1]
-  test(
+  executable(
     name,
-    executable(
-      name,
-      sources,
-      override_options: opts,
-      cpp_args: args,
-      dependencies: [plazma_dep, argparse_dep] + deps,
-    ),
+    sources,
+    override_options: opts,
+    cpp_args: args,
+    dependencies: [plazma_dep, argparse_dep] + deps,
   )
 endforeach
