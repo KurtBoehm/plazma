@@ -35,6 +35,10 @@ struct Writer : public thes::FileWriter {
       {LZMA_VLI_UNKNOWN, nullptr},
     }};
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif
     const lzma_mt mt{
       .flags = 0,
       .threads = thread_num.value_or(lzma_cputhreads()),
@@ -43,6 +47,9 @@ struct Writer : public thes::FileWriter {
       .filters = filters.data(),
       .check = LZMA_CHECK_CRC64,
     };
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
     if (const lzma_ret ret = lzma_stream_encoder_mt(&strm_, &mt); ret != LZMA_OK) {
       throw Exception("Error ", ret);
