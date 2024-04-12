@@ -1,3 +1,5 @@
+option('test', type: 'boolean', value: false)
+
 option('decoder_arm', type: 'boolean', value: false)
 option('decoder_arm64', type: 'boolean', value: false)
 option('decoder_armthumb', type: 'boolean', value: false)

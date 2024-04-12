@@ -3,6 +3,7 @@
 
 #include <span>
 
+#include <fmt/core.h>
 #include <lzma.h>
 
 #include "thesauros/containers.hpp"
@@ -42,7 +43,7 @@ void Block::decompress(thes::DynamicBuffer& scratch, thes::DynamicBuffer& out) {
     throw Exception("Invalid arguments.");
   }
   if (err != LZMA_OK) {
-    throw Exception("Error in block header: ", err);
+    throw Exception(fmt::format("Error in block header: {}", err));
   }
 
   // decode the block

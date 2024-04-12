@@ -10,10 +10,14 @@
 #include <span>
 #include <type_traits>
 
+#include <fmt/core.h>
 #include <lzma.h>
 
 #include "thesauros/io.hpp"
+#include "thesauros/macropolis.hpp"
 #include "thesauros/utility.hpp"
+
+#include "plazma/base.hpp"
 
 namespace plazma {
 // Based on doc/04_compress_easy_mt.c
@@ -35,10 +39,7 @@ struct Writer : public thes::FileWriter {
       {LZMA_VLI_UNKNOWN, nullptr},
     }};
 
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-#endif
+    THES_POLIS_WARNINGS_PUSH(gcc, "-Wmissing-field-initializers")
     const lzma_mt mt{
       .flags = 0,
       .threads = thread_num.value_or(lzma_cputhreads()),
@@ -47,12 +48,10 @@ struct Writer : public thes::FileWriter {
       .filters = filters.data(),
       .check = LZMA_CHECK_CRC64,
     };
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
+    THES_POLIS_WARNINGS_POP(gcc)
 
     if (const lzma_ret ret = lzma_stream_encoder_mt(&strm_, &mt); ret != LZMA_OK) {
-      throw Exception("Error ", ret);
+      throw Exception(fmt::format("Error {}", ret));
     }
   }
 
@@ -100,7 +99,7 @@ struct Writer : public thes::FileWriter {
         break;
       }
       if (ret != LZMA_OK) {
-        throw Exception("Error ", ret);
+        throw Exception(fmt::format("Error {}", ret));
       }
     }
   }

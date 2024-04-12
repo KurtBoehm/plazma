@@ -4,8 +4,7 @@
 #include <string>
 #include <utility>
 
-#include "thesauros/io.hpp"
-#include "thesauros/test.hpp"
+#include "thesauros/thesauros.hpp"
 
 #include "plazma/plazma.hpp"
 

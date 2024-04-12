@@ -8,13 +8,14 @@
 #include <filesystem>
 #include <span>
 
+#include <fmt/core.h>
 #include <lzma.h>
 
 #include "thesauros/containers.hpp"
 #include "thesauros/io.hpp"
 #include "thesauros/utility.hpp"
 
-#include "plazma/base/block.hpp"
+#include "plazma/base.hpp"
 #include "plazma/decode/read-index.hpp"
 
 namespace plazma {
@@ -80,7 +81,7 @@ struct Reader : public thes::FileReader {
             throw Exception("Unsupported options are present in the header.");
           }
           if (ret != LZMA_OK) {
-            throw Exception("Invalid header: ", ret);
+            throw Exception(fmt::format("Invalid header: {}", ret));
           }
 
           return read_index(*this);

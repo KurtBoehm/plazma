@@ -67,7 +67,7 @@ inline lzma_index* read_index(thes::FileReader& fh) {
     {
       Stream s{};
       if (lzma_index_decoder(&s, &nidx, UINT64_MAX) != LZMA_OK) {
-        throw Exception("error initializing index decoder");
+        throw Exception("Error initializing index decoder");
       }
       thes::DynamicBuffer scratch{};
       decode(s, fh, scratch);
@@ -76,13 +76,13 @@ inline lzma_index* read_index(thes::FileReader& fh) {
 
     // Set index params, combine with any later indices
     if (lzma_index_stream_flags(nidx, &flags) != LZMA_OK) {
-      throw Exception("error setting stream flags");
+      throw Exception("Error setting stream flags");
     }
     if (lzma_index_stream_padding(nidx, pad) != LZMA_OK) {
-      throw Exception("error setting stream padding");
+      throw Exception("Error setting stream padding");
     }
     if (idx != nullptr && lzma_index_cat(nidx, idx, nullptr) != LZMA_OK) {
-      throw Exception("error combining indices");
+      throw Exception("Error combining indices");
     }
     idx = nidx;
 

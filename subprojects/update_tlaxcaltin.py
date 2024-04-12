@@ -11,6 +11,7 @@ folder_names = {
     "gtest": "googletest",
     "liblzma": "xz",
     "nlohmann-json": "json",
+    "sdl2": "SDL2",
     "suitesparse": "SuiteSparse",
 }
 
@@ -19,7 +20,7 @@ assert subprojects_path.name == "subprojects"
 project_path = subprojects_path.parent
 assert Path.cwd() == project_path
 
-token_path = project_path.joinpath("token.txt")
+token_path = project_path / "token.txt"
 if not token_path.exists():
     print("No token file exists.")
     url = "git@github.com:Fingolfin1196/tlaxcaltin.git"
@@ -29,7 +30,7 @@ else:
         token = f.read().strip()
     url = f"https://Fingolfin1196:{token}@github.com/Fingolfin1196/tlaxcaltin.git"
 
-selection_path = project_path.joinpath("subprojects.txt")
+selection_path = project_path / "subprojects.txt"
 selection: set[str] | None
 if not selection_path.exists():
     print("No subprojects file exists.")
@@ -41,8 +42,8 @@ else:
 with TemporaryDirectory() as tmp_dir:
     tmp_path = Path(tmp_dir).resolve()
 
-    package_cache_path = subprojects_path.joinpath("packagecache")
-    packagecache_tmp_path = tmp_path.joinpath("packagecache")
+    package_cache_path = subprojects_path / "packagecache"
+    packagecache_tmp_path = tmp_path / "packagecache"
 
     has_packagecache = package_cache_path.exists()
     if has_packagecache:
@@ -50,8 +51,8 @@ with TemporaryDirectory() as tmp_dir:
 
     rmtree(subprojects_path)
     run(["git", "clone", url, "subprojects"], check=True)
-    rmtree(subprojects_path.joinpath(".git"))
-    rmtree(subprojects_path.joinpath("private"))
+    rmtree(subprojects_path / ".git")
+    rmtree(subprojects_path / "private")
 
     # Remove all subprojects that are not desired
     if selection is not None:
@@ -77,7 +78,7 @@ with TemporaryDirectory() as tmp_dir:
                 rmtree(p)
 
         # Remove package files
-        package_files_path = subprojects_path.joinpath("packagefiles")
+        package_files_path = subprojects_path / "packagefiles"
         for p in package_files_path.iterdir():
             if p.name not in selection:
                 rmtree(p)
@@ -85,7 +86,7 @@ with TemporaryDirectory() as tmp_dir:
             package_files_path.rmdir()
 
         # Clean up gitignore
-        gitignore_path = subprojects_path.joinpath(".gitignore")
+        gitignore_path = subprojects_path / ".gitignore"
         with open(gitignore_path, "r") as f:
             gitignore = f.readlines()
         new_gitignore = []

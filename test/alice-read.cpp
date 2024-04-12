@@ -4,10 +4,7 @@
 #include <span>
 #include <string>
 
-#include "thesauros/execution.hpp"
-#include "thesauros/io.hpp"
-#include "thesauros/test.hpp"
-#include "thesauros/utility.hpp"
+#include "thesauros/thesauros.hpp"
 
 #include "plazma/plazma.hpp"
 

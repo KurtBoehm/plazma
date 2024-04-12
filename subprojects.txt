@@ -1,6 +1,7 @@
 argparse
 boost-preprocessor
 expected
+fmt
 liblzma
 options
 thesauros

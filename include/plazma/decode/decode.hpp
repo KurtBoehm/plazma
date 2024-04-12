@@ -4,6 +4,7 @@
 #include <optional>
 
 #include <lzma.h>
+#include <fmt/core.h>
 
 #include "thesauros/containers.hpp"
 #include "thesauros/io.hpp"
@@ -27,7 +28,7 @@ inline void decode(Stream& s, thes::FileReader& fh, thes::DynamicBuffer& scratch
     }
     err = lzma_code(&s, LZMA_RUN);
     if (err != LZMA_OK and err != LZMA_STREAM_END) {
-      throw Exception("Error decoding index: ", err);
+      throw Exception(fmt::format("Error decoding index: {}", err));
     }
   }
 }

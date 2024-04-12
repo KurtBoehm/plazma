@@ -2,7 +2,7 @@
 project(
   'liblzma',
   'c',
-  version: '5.4.4',
+  version: '5.4.5',
   license: 'pd/lgpl2/gpl2/gpl3',
 )
 
@@ -115,10 +115,7 @@ if cc.check_header('immintrin.h')
   cdata.set('HAVE_IMMINTRIN_H', 1)
 endif
 
-if (
-  cdata.has('HAVE_IMMINTRIN_H')
-  and cc.has_header_symbol('immintrin.h', '_mm_movemask_epi8')
-)
+if cdata.has('HAVE_IMMINTRIN_H') and cc.has_header_symbol('immintrin.h', '_mm_movemask_epi8')
   cdata.set('HAVE__MM_MOVEMASK_EPI8', 1)
 endif
 
@@ -299,4 +296,8 @@ configure_file(
 
 confinc = include_directories('.')
 subdir('src')
-subdir('tests')
+
+if get_option('test')
+  subdir('tests')
+  subdir('files')
+endif
