@@ -21,7 +21,7 @@ pc.generate(
   description: 'LZMA library wrapper',
 )
 
-if meson.is_subproject()
+if not meson.is_subproject()
   subdir('tools')
 endif
 
