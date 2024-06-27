@@ -20,17 +20,21 @@
 #include "plazma/base.hpp"
 
 namespace plazma {
+struct WriterParams {
+  const std::optional<thes::u32> preset{};
+  std::optional<thes::u64> block_size{};
+  std::optional<thes::u32> thread_num{};
+};
+
 // Based on doc/04_compress_easy_mt.c
 struct Writer : public thes::FileWriter {
   static constexpr std::size_t io_buffer_size = (BUFSIZ <= 1024) ? 8192 : (BUFSIZ & ~7U);
   using IoBuf = std::array<uint8_t, io_buffer_size>;
 
-  explicit Writer(const std::filesystem::path& dst_path, const std::optional<thes::u32> preset = {},
-                  std::optional<thes::u64> block_size = {},
-                  std::optional<thes::u32> thread_num = {})
+  explicit Writer(const std::filesystem::path& dst_path, WriterParams params = {})
       : thes::FileWriter(dst_path) {
     lzma_options_lzma opt_lzma{};
-    if (lzma_lzma_preset(&opt_lzma, preset.value_or(LZMA_PRESET_DEFAULT)) != 0) {
+    if (lzma_lzma_preset(&opt_lzma, params.preset.value_or(LZMA_PRESET_DEFAULT)) != 0) {
       throw Exception("Getting preset failed!");
     }
 
@@ -42,8 +46,8 @@ struct Writer : public thes::FileWriter {
     THES_POLIS_WARNINGS_PUSH(gcc, "-Wmissing-field-initializers")
     const lzma_mt mt{
       .flags = 0,
-      .threads = thread_num.value_or(lzma_cputhreads()),
-      .block_size = block_size.value_or(0),
+      .threads = params.thread_num.value_or(lzma_cputhreads()),
+      .block_size = params.block_size.value_or(0),
       .timeout = 0,
       .filters = filters.data(),
       .check = LZMA_CHECK_CRC64,
