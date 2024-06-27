@@ -2,16 +2,17 @@
 #define INCLUDE_PLAZMA_DECODE_READER_HPP
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <cstddef>
 #include <cstring>
 #include <filesystem>
 #include <span>
 
-#include <fmt/core.h>
 #include <lzma.h>
 
 #include "thesauros/containers.hpp"
+#include "thesauros/format.hpp"
 #include "thesauros/io.hpp"
 #include "thesauros/utility.hpp"
 
@@ -65,11 +66,11 @@ struct Reader : public thes::FileReader {
 
   explicit Reader(const std::filesystem::path& path)
       : thes::FileReader(path), index_([this] {
-          thes::DynamicBuffer header(LZMA_STREAM_HEADER_SIZE);
-          read(std::span{header.data(), LZMA_STREAM_HEADER_SIZE});
+          std::array<thes::u8, LZMA_STREAM_HEADER_SIZE> header{};
+          read(header);
 
           lzma_stream_flags flags;
-          lzma_ret ret = lzma_stream_header_decode(&flags, header.data_u8());
+          lzma_ret ret = lzma_stream_header_decode(&flags, header.data());
           if (ret == LZMA_FORMAT_ERROR) {
             throw Exception(
               "Magic bytes don't match, thus the given buffer cannot be Stream Header.");

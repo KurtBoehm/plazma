@@ -25,13 +25,13 @@ void Block::decompress(thes::DynamicBuffer& scratch, thes::DynamicBuffer& out) {
   Filters filters{};
   block.filters = filters.data();
 
-  thes::DynamicBuffer header{};
-  reader_.pread(header, 1, static_cast<long>(coff()));
-  block.header_size = lzma_block_header_size_decode(header[0]);
-  header.resize(block.header_size);
-  reader_.pread(std::span{header.data() + 1, block.header_size - 1}, static_cast<long>(coff()) + 1);
+  reader_.pread(scratch, 1, static_cast<long>(coff()));
+  block.header_size = lzma_block_header_size_decode(scratch[0]);
+  scratch.resize(block.header_size);
+  reader_.pread(std::span{scratch.data() + 1, block.header_size - 1},
+                static_cast<long>(coff()) + 1);
 
-  lzma_ret err = lzma_block_header_decode(&block, nullptr, header.data_u8());
+  lzma_ret err = lzma_block_header_decode(&block, nullptr, scratch.data_u8());
   if (err == LZMA_OPTIONS_ERROR) {
     throw Exception(
       "The Block Header specifies some unsupported options such as unsupported filters.");

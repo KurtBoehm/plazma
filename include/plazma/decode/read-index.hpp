@@ -2,6 +2,7 @@
 #define INCLUDE_PLAZMA_DECODE_READ_INDEX_HPP
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -54,8 +55,10 @@ inline lzma_index* read_index(thes::FileReader& fh) {
     // Read the footer
     lzma_stream_flags flags;
     fh.seek(-LZMA_STREAM_HEADER_SIZE, SEEK_CUR);
-    fh.read(buf, LZMA_STREAM_HEADER_SIZE);
-    lzma_ret err = lzma_stream_footer_decode(&flags, buf.data_u8());
+
+    std::array<thes::u8, LZMA_STREAM_HEADER_SIZE> footer{};
+    fh.read(footer);
+    lzma_ret err = lzma_stream_footer_decode(&flags, footer.data());
     if (err != LZMA_OK) {
       throw Exception("Bad Footer");
     }
@@ -69,8 +72,7 @@ inline lzma_index* read_index(thes::FileReader& fh) {
       if (lzma_index_decoder(&s, &nidx, UINT64_MAX) != LZMA_OK) {
         throw Exception("Error initializing index decoder");
       }
-      thes::DynamicBuffer scratch{};
-      decode(s, fh, scratch);
+      decode(s, fh, buf);
     }
     npos -= static_cast<long>(lzma_index_file_size(nidx));
 
