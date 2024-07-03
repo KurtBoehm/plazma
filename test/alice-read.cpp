@@ -36,7 +36,7 @@ int main(int /*argc*/, const char* const* const argv) {
     std::cout << thread_num << '\n';
     std::string str(xz_size + 1, '\0');
 
-    thes::FixedThreadPool pool(thread_num);
+    thes::FixedStdThreadPool pool(thread_num);
     thes::UniformIndexSegmenter seg{xz_size, pool.size()};
     pool.execute([&](const std::size_t idx) {
       plazma::Reader reader{xz_path};
