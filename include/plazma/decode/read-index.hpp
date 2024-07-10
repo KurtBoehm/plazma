@@ -25,7 +25,7 @@ inline lzma_index* read_index(thes::FileReader& fh) {
   lzma_index* idx = nullptr;
   thes::DynamicBuffer buf{};
 
-  fh.seek(0, SEEK_END);
+  fh.seek(0, thes::Seek::end);
   while (true) {
     // Skip any padding.
     lzma_vli pad = 0;
@@ -37,24 +37,24 @@ inline lzma_index* read_index(thes::FileReader& fh) {
           throw Exception("Padding is not allowed at the start!");
         }
         const auto s = std::min(p, static_cast<long>(chunk_size));
-        fh.seek(p - s, SEEK_SET);
+        fh.seek(p - s, thes::Seek::set);
         fh.read(buf, static_cast<std::size_t>(s));
 
         for (std::byte* it = buf.data() + buf.size(); it != buf.data(); it -= 4) {
           auto* f = it - 4;
           if (thes::byte_read<std::uint32_t>(f) != 0) {
-            fh.seek(f - buf.data() - static_cast<long>(buf.size()) + 4, SEEK_CUR);
+            fh.seek(f - buf.data() - static_cast<long>(buf.size()) + 4, thes::Seek::cur);
             return;
           }
           pad += 4;
         }
-        fh.seek(p - s, SEEK_SET);
+        fh.seek(p - s, thes::Seek::set);
       }
     }();
 
     // Read the footer
     lzma_stream_flags flags;
-    fh.seek(-LZMA_STREAM_HEADER_SIZE, SEEK_CUR);
+    fh.seek(-LZMA_STREAM_HEADER_SIZE, thes::Seek::cur);
 
     std::array<thes::u8, LZMA_STREAM_HEADER_SIZE> footer{};
     fh.read(footer);
@@ -65,7 +65,7 @@ inline lzma_index* read_index(thes::FileReader& fh) {
     long npos = fh.tell();
 
     // Read the index
-    fh.seek(-LZMA_STREAM_HEADER_SIZE - static_cast<long>(flags.backward_size), SEEK_CUR);
+    fh.seek(-LZMA_STREAM_HEADER_SIZE - static_cast<long>(flags.backward_size), thes::Seek::cur);
     lzma_index* nidx{};
     {
       Stream s{};
@@ -91,7 +91,7 @@ inline lzma_index* read_index(thes::FileReader& fh) {
     if (npos == 0) {
       return idx;
     }
-    fh.seek(npos, SEEK_SET);
+    fh.seek(npos, thes::Seek::set);
   }
 }
 } // namespace plazma
