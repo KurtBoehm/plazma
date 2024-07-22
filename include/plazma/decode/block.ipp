@@ -3,10 +3,10 @@
 
 #include <span>
 
-#include <fmt/core.h>
 #include <lzma.h>
 
 #include "thesauros/containers.hpp"
+#include "thesauros/format.hpp"
 
 #include "plazma/base/block.hpp"
 #include "plazma/base/exception.hpp"

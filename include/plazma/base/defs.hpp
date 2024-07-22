@@ -1,11 +1,11 @@
 #ifndef INCLUDE_PLAZMA_BASE_DEFS_HPP
 #define INCLUDE_PLAZMA_BASE_DEFS_HPP
 
-#include <fmt/core.h>
-#include <fmt/format.h>
+#include <cstddef>
+
 #include <lzma.h>
 
-#include <cstddef>
+#include "thesauros/format.hpp"
 
 namespace plazma {
 inline constexpr std::size_t chunk_size = 4096;

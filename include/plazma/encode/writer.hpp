@@ -10,9 +10,9 @@
 #include <span>
 #include <type_traits>
 
-#include <fmt/core.h>
 #include <lzma.h>
 
+#include "thesauros/format.hpp"
 #include "thesauros/io.hpp"
 #include "thesauros/macropolis.hpp"
 #include "thesauros/utility.hpp"

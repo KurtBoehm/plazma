@@ -4,9 +4,9 @@
 #include <optional>
 
 #include <lzma.h>
-#include <fmt/core.h>
 
 #include "thesauros/containers.hpp"
+#include "thesauros/format.hpp"
 #include "thesauros/io.hpp"
 
 #include "plazma/base/defs.hpp"
