@@ -24,7 +24,12 @@ struct Reader : public thes::FileReader {
   struct BlockSentinel {};
 
   struct BlockIter {
-    explicit BlockIter(Reader& reader, const lzma_index* index) : reader_(reader) {
+    using value_type = Block;
+    using reference = Block;
+    using difference_type = std::ptrdiff_t;
+
+    BlockIter() = default;
+    explicit BlockIter(Reader& reader, const lzma_index* index) : reader_(&reader) {
       lzma_index_iter_init(&it_, index);
     }
 
@@ -43,13 +48,18 @@ struct Reader : public thes::FileReader {
       }
       return *this;
     }
-
-    Block operator*() {
-      assert(!is_end_);
-      return Block(reader_, it_);
+    BlockIter operator++(int) {
+      BlockIter tmp{*this};
+      ++(*this);
+      return tmp;
     }
 
-    thes::ArrowProxy<Block> operator->() {
+    Block operator*() const {
+      assert(!is_end_);
+      return Block(*reader_, it_);
+    }
+
+    thes::ArrowProxy<Block> operator->() const {
       assert(!is_end_);
       return {**this};
     }
@@ -59,7 +69,7 @@ struct Reader : public thes::FileReader {
     }
 
   private:
-    Reader& reader_;
+    Reader* reader_{};
     lzma_index_iter it_{};
     bool is_end_{false};
   };
