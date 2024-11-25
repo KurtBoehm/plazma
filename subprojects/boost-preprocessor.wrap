@@ -1,8 +1,8 @@
 [wrap-file]
-directory = preprocessor-boost-1.83.0
-source_url = https://github.com/boostorg/preprocessor/archive/refs/tags/boost-1.83.0.tar.gz
-source_filename = preprocessor-boost-1.83.0.tar.gz
-source_hash = 6bc84a347f2b6300c44c6ee48d546912b64166f33e04da47df831c2f0792f175
+directory = preprocessor-boost-1.86.0
+source_url = https://github.com/boostorg/preprocessor/archive/refs/tags/boost-1.86.0.tar.gz
+source_filename = preprocessor-boost-1.86.0.tar.gz
+source_hash = a1ad5194262db3695debfb457a86494851574f8791ce14da656601b7eaac4c8e
 patch_directory = boost-preprocessor
 
 [provide]

@@ -1,8 +1,8 @@
 [wrap-file]
-directory = xz-5.4.5
-source_url = https://github.com/tukaani-project/xz/archive/refs/tags/v5.4.5.tar.gz
-source_filename = xz-5.4.5.tar.xz
-source_hash = 1a7a62c1ae1ba453833327fee094de5a07175f6bb57b022f3e25a42506dd4c1d
+directory = xz-5.6.3
+source_url = https://github.com/tukaani-project/xz/archive/refs/tags/v5.6.3.tar.gz
+source_filename = xz-5.6.3.tar.xz
+source_hash = 1256ba1212249569e572ffe412635becbe4b033145ba30ff24dcb7e9c6c04b27
 patch_directory = liblzma
 
 [provide]
