@@ -13,6 +13,7 @@ folder_names = {
     "nlohmann-json": "json",
     "sdl2": "SDL2",
     "suitesparse": "SuiteSparse",
+    "xmp-toolkit-sdk": "XMP-Toolkit-SDK",
 }
 
 subprojects_path = Path(__file__).parent.resolve()

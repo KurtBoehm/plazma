@@ -1,4 +1,0 @@
-[wrap-git]
-url = git@github.com:Fingolfin1196/meson-options
-revision = head
-clone-recursive = true

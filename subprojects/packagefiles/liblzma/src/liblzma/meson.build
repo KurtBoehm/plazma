@@ -155,10 +155,7 @@ liblzma = library(
 )
 
 api = []
-if (
-  host_machine.system() == 'windows'
-  and get_option('default_library') == 'static'
-)
+if (host_machine.system() == 'windows' and get_option('default_library') == 'static')
   api += '-DLZMA_API_STATIC'
 endif
 

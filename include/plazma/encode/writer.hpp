@@ -43,7 +43,7 @@ struct Writer : public thes::FileWriter {
       {LZMA_VLI_UNKNOWN, nullptr},
     }};
 
-    THES_POLIS_WARNINGS_PUSH(gcc, "-Wmissing-field-initializers")
+    THES_POLIS_DIAGNOSTICS_IGNORED_PUSH(gcc, "-Wmissing-field-initializers")
     const lzma_mt mt{
       .flags = 0,
       .threads = params.thread_num.value_or(lzma_cputhreads()),
@@ -52,7 +52,7 @@ struct Writer : public thes::FileWriter {
       .filters = filters.data(),
       .check = LZMA_CHECK_CRC64,
     };
-    THES_POLIS_WARNINGS_POP(gcc)
+    THES_POLIS_DIAGNOSTICS_IGNORED_POP(gcc)
 
     if (const lzma_ret ret = lzma_stream_encoder_mt(&strm_, &mt); ret != LZMA_OK) {
       throw Exception(fmt::format("Error {}", ret));
