@@ -1,3 +1,9 @@
+// This file is part of https://github.com/KurtBoehm/plazma.
+//
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 #ifndef INCLUDE_PLAZMA_ENCODE_WRITER_HPP
 #define INCLUDE_PLAZMA_ENCODE_WRITER_HPP
 
@@ -15,6 +21,7 @@
 #include "thesauros/format.hpp"
 #include "thesauros/io.hpp"
 #include "thesauros/macropolis.hpp"
+#include "thesauros/types.hpp"
 
 #include "plazma/base.hpp"
 
@@ -38,8 +45,8 @@ struct Writer : public thes::FileWriter {
     }
 
     std::array<lzma_filter, LZMA_FILTERS_MAX + 1> filters{{
-      {LZMA_FILTER_LZMA2, &opt_lzma},
-      {LZMA_VLI_UNKNOWN, nullptr},
+      {.id = LZMA_FILTER_LZMA2, .options = &opt_lzma},
+      {.id = LZMA_VLI_UNKNOWN, .options = nullptr},
     }};
 
     THES_POLIS_DIAGNOSTICS_IGNORED_PUSH(gcc, "-Wmissing-field-initializers")

@@ -1,6 +1,6 @@
 # Tlaxcaltin 🌮: A Meson Subproject Manager
 
-_Tlaxcaltin_ (plural of Nahuatl _tlaxcalli_, “tortilla”) is a collection of wraps and corresponding package files for use in other projects.
+_Tlaxcaltin_ (plural of Nahuatl _tlaxcalli_, “tortilla”) is a collection of wraps and corresponding package files for use in other projects, together with tools to manage the subprojects used.
 It is designed to be used as the source of all subprojects which a Meson-based project uses and can be integrated into a project using the following steps:
 
 1. Add a file named `subprojects.txt` to the root folder of the project and add the names of the required subprojects to that file. These names correspond to the wrap files in the root directory of this repository without the suffix (i.e. the _stem_ of the file path). The dependencies of these projects are determined by Tlaxcaltin and included as well.  
@@ -9,7 +9,7 @@ It is designed to be used as the source of all subprojects which a Meson-based p
 
 To add new subprojects to a project or to update the existing subprojects, edit `subprojects.txt` (if required) and execute `python3 subprojects/update_tlaxcaltin.py` again.
 
-Note that this adds the Meson wraps and the required package files to the main projects source tree.
+Note that this adds the selected Meson wraps and package files, as well as other required Tlaxcaltin files, to the main projects source tree.
 Attempts to use Tlaxcaltin as a Git subproject have failed in the past, necessitating this suboptimal solution.
 
 ## Licence

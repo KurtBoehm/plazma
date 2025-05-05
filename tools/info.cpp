@@ -1,43 +1,26 @@
+// This file is part of https://github.com/KurtBoehm/plazma.
+//
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
-#include <stdexcept>
-#include <string>
-#include <vector>
 
-#include "argparse/argparse.hpp"
+#include "thesauros/format.hpp"
 
 #include "plazma/plazma.hpp"
 
-struct Args {
-  std::vector<std::filesystem::path> paths;
-};
-
-Args parse_args(int argc, const char** argv) {
-  argparse::ArgumentParser parser("sizes");
-  parser.add_argument("files").nargs(argparse::nargs_pattern::at_least_one);
-  try {
-    parser.parse_args(argc, argv);
-    const auto files_str = parser.get<std::vector<std::string>>("files");
-
-    std::vector<std::filesystem::path> files{};
-    files.reserve(files_str.size());
-    for (const auto& file_str : files_str) {
-      files.push_back(std::filesystem::canonical(file_str));
-    }
-
-    return {files};
-  } catch (const std::runtime_error& err) {
-    std::cerr << err.what() << '\n';
-    std::cerr << parser;
-    std::exit(1);
-  }
-}
-
 int main(int argc, const char** argv) {
-  Args args = parse_args(argc, argv);
+  if (argc < 2) {
+    fmt::print(stderr, "At least one path is required!\n");
+    return EXIT_FAILURE;
+  }
+
   double ratio_sum = 0;
-  for (const auto& p : args.paths) {
+  for (int i = 1; i < argc; ++i) {
+    const std::filesystem::path p{argv[i]};
     if (!std::filesystem::exists(p)) {
       std::cerr << p << " does not exist!\n";
     }
@@ -54,5 +37,5 @@ int main(int argc, const char** argv) {
 
     ratio_sum += ratio;
   }
-  std::cout << "average ratio: " << ratio_sum / double(args.paths.size()) << '\n';
+  std::cout << "average ratio: " << ratio_sum / double(argc - 1) << '\n';
 }

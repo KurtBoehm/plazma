@@ -1,5 +1,3 @@
-argparse
-fmt
 liblzma
 options
 thesauros
