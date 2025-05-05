@@ -1,3 +1,13 @@
+# This file is part of https://github.com/KurtBoehm/tlaxcaltin.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+# Update Tlaxcaltin in a project that uses it, with steps that are detailed later
+# in this file. Note that this requires “subprojects.txt” to exist in the root folder
+# of the project using Tlaxcaltin.
+
 import re
 from pathlib import Path
 from shutil import move, rmtree
@@ -10,7 +20,7 @@ folder_names = {
     "google-benchmark": "benchmark",
     "gtest": "googletest",
     "liblzma": "xz",
-    "nlohmann-json": "json",
+    "nlohmann-json": "nlohmann_json",
     "sdl2": "SDL2",
     "suitesparse": "SuiteSparse",
     "xmp-toolkit-sdk": "XMP-Toolkit-SDK",
@@ -21,7 +31,32 @@ assert subprojects_path.name == "subprojects"
 project_path = subprojects_path.parent
 assert Path.cwd() == project_path
 
-url = "git@github.com:Fingolfin1196/tlaxcaltin.git"
+
+def expand_selection(selection: set[str]):
+    new_selection: set[str] = set()
+    for s in selection:
+        new_selection.add(s)
+        wrap_path = subprojects_path / f"{s}.wrap"
+        if not wrap_path.exists():
+            continue
+        with open(wrap_path, "r") as f:
+            txt = f.read()
+        dependencies_lines = [
+            line for line in txt.splitlines() if line.startswith("# dependencies: ")
+        ]
+        if len(dependencies_lines) == 0:
+            continue
+        dependencies = [
+            d.strip() for line in dependencies_lines for d in line[16:].split(",")
+        ]
+        new_selection = new_selection.union(dependencies)
+    if new_selection != selection:
+        new_selection = expand_selection(new_selection)
+        print(f"expanded selection: {new_selection}")
+    return new_selection
+
+
+url = "git@github.com:KurtBoehm/tlaxcaltin.git"
 
 selection_path = project_path / "subprojects.txt"
 selection: set[str] | None
@@ -30,7 +65,7 @@ if not selection_path.exists():
     selection = None
 else:
     with open(selection_path, "r") as f:
-        selection = {l.strip() for l in f.readlines()}
+        selection = {line.strip() for line in f.readlines()}
 
 with TemporaryDirectory() as tmp_dir:
     tmp_path = Path(tmp_dir).resolve()
@@ -49,6 +84,7 @@ with TemporaryDirectory() as tmp_dir:
 
     # Remove all subprojects that are not desired
     if selection is not None:
+        selection = expand_selection(selection)
         fnames = {folder_names.get(entry, entry) for entry in selection}
 
         # Remove wraps and direct subfolders
@@ -70,11 +106,12 @@ with TemporaryDirectory() as tmp_dir:
 
         # Remove patches
         patch_path = package_files_path / "patch"
-        for p in patch_path.iterdir():
-            if p.stem not in selection:
-                p.unlink()
-        if len(list(patch_path.iterdir())) == 0:
-            patch_path.rmdir()
+        if patch_path.exists():
+            for p in patch_path.iterdir():
+                if p.stem not in selection:
+                    p.unlink()
+            if len(list(patch_path.iterdir())) == 0:
+                patch_path.rmdir()
 
         # Clean up gitignore
         gitignore_path = subprojects_path / ".gitignore"
@@ -82,17 +119,17 @@ with TemporaryDirectory() as tmp_dir:
             gitignore = f.readlines()
         new_gitignore = []
         folder_re = re.compile(r"/(.*)-\*/")
-        for l in gitignore:
-            l = l.strip()
-            if (m := folder_re.fullmatch(l)) is not None:
+        for line in gitignore:
+            line = line.strip()
+            if (m := folder_re.fullmatch(line)) is not None:
                 if m.group(1) in fnames:
-                    new_gitignore.append(l)
+                    new_gitignore.append(line)
             else:
-                new_gitignore.append(l)
+                new_gitignore.append(line)
         if new_gitignore[-1] == "":
             new_gitignore.pop()
         with open(gitignore_path, "w") as f:
-            f.write("".join(f"{l!s}\n" for l in new_gitignore))
+            f.write("".join(f"{line!s}\n" for line in new_gitignore))
 
     run(["git", "add", "subprojects"], check=True)
 

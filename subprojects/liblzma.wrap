@@ -1,8 +1,14 @@
+# This file is part of https://github.com/KurtBoehm/tlaxcaltin.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 [wrap-file]
-directory = xz-5.6.3
-source_url = https://github.com/tukaani-project/xz/archive/refs/tags/v5.6.3.tar.gz
-source_filename = xz-5.6.3.tar.xz
-source_hash = 1256ba1212249569e572ffe412635becbe4b033145ba30ff24dcb7e9c6c04b27
+directory = xz-5.8.1
+source_url = https://github.com/tukaani-project/xz/archive/refs/tags/v5.8.1.tar.gz
+source_filename = xz-5.8.1.tar.xz
+source_hash = bdbc23fbf9098843357e71e49685724fda2c320c29cb1b25fd90505f14bb0b3d
 patch_directory = liblzma
 
 [provide]

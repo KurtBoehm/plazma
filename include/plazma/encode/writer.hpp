@@ -15,7 +15,6 @@
 #include "thesauros/format.hpp"
 #include "thesauros/io.hpp"
 #include "thesauros/macropolis.hpp"
-#include "thesauros/utility.hpp"
 
 #include "plazma/base.hpp"
 
@@ -82,7 +81,8 @@ struct Writer : public thes::FileWriter {
     while (true) {
       if (strm_.avail_in == 0 && action == LZMA_RUN) {
         strm_.next_in = current;
-        const auto read_size = std::min<std::size_t>(end - current, io_buffer_size);
+        const auto read_size =
+          std::min(*thes::safe_cast<std::size_t>(end - current), io_buffer_size);
         strm_.avail_in = read_size;
         current += read_size;
 

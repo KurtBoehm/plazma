@@ -11,7 +11,7 @@
 
 #include "thesauros/containers.hpp"
 #include "thesauros/io.hpp"
-#include "thesauros/utility.hpp"
+#include "thesauros/memory.hpp"
 
 #include "plazma/base/defs.hpp"
 #include "plazma/base/exception.hpp"

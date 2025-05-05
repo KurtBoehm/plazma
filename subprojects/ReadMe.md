@@ -1,14 +1,23 @@
-# Tlaxcaltin
+# Tlaxcaltin 🌮: A Meson Subproject Manager
 
-_Tlaxcaltin_ (plural of _tlaxcalli_, which is Nahuatl for _tortilla_) is a collection of wraps and corresponding package files for use in other projects.
-Sadly, the wrap system does not seem to work with nested git submodules or subtrees, which is why I use the git `pre-commit` hook to keep the wraps updated instead:
+_Tlaxcaltin_ (plural of Nahuatl _tlaxcalli_, “tortilla”) is a collection of wraps and corresponding package files for use in other projects.
+It is designed to be used as the source of all subprojects which a Meson-based project uses and can be integrated into a project using the following steps:
 
-```sh
-#!/bin/sh
-if [ ! -d "./subprojects/" ]; then
-  git clone git@github.com:Fingolfin1196/tlaxcaltin.git subprojects
-fi
-python3 ./subprojects/update_tlaxcaltin.py
-```
+1. Add a file named `subprojects.txt` to the root folder of the project and add the names of the required subprojects to that file. These names correspond to the wrap files in the root directory of this repository without the suffix (i.e. the _stem_ of the file path). The dependencies of these projects are determined by Tlaxcaltin and included as well.  
+  If there is no file named `subprojects.txt` in the project’s root folder, all of Tlaxcaltin’s subprojects are included, which is usually not desirable.
+2. Copy `update_tlaxcaltin.py` into a subfolder named `subprojects` within the project’s root folder and execute `python3 subprojects/update_tlaxcaltin.py`.
 
-This has the unfortunate downside of having to download the dependencies anew each time a commit is performed, but it’s the best I’ve got.
+To add new subprojects to a project or to update the existing subprojects, edit `subprojects.txt` (if required) and execute `python3 subprojects/update_tlaxcaltin.py` again.
+
+Note that this adds the Meson wraps and the required package files to the main projects source tree.
+Attempts to use Tlaxcaltin as a Git subproject have failed in the past, necessitating this suboptimal solution.
+
+## Licence
+
+Tlaxcaltin is licenced under the terms of the Mozilla Public Licence 2.0, which is provided in [`License`](License).
+There are some wraps package files which are based on Meson wraps from the [Meson Wrap Database](https://github.com/mesonbuild/wrapdb), which are licenced under the MIT licence, which is provided as [`LicenseWrapDB`](LicenseWrapDB).
+These are:
+
+- `fmt`
+- `liblzma`
+- `nlohmann-json`

@@ -1,3 +1,9 @@
+# This file is part of https://github.com/KurtBoehm/tlaxcaltin.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 lzma_sources = files(
   '../common/tuklib_physmem.c',
   'common/block_util.c',
@@ -59,9 +65,8 @@ main_dec_sources = files(
 check_sources = files(
   'check/check.c',
   'check/crc32_fast.c',
-  'check/crc32_table.c',
   'check/crc64_fast.c',
-  'check/crc64_table.c',
+  'check/crc_clmul_consts_gen.c',
   'check/sha256.c',
 )
 

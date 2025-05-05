@@ -1,8 +1,14 @@
+# This file is part of https://github.com/KurtBoehm/tlaxcaltin.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 # liblzma is what upstream uses for their pkg-config name
 project(
   'liblzma',
   'c',
-  version: '5.6.3',
+  version: '5.8.1',
   license: 'pd/lgpl2/gpl2/gpl3',
 )
 

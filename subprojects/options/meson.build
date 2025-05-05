@@ -1,7 +1,13 @@
-# Taken from here:
-# https://github.com/lefticus/cppbestpractices/blob/master/02-Use_the_Tools_Available.md
+# This file is part of https://github.com/KurtBoehm/tlaxcaltin.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 project('meson-options')
+
+# The warnings are based on those listed here:
+# https://github.com/lefticus/cppbestpractices/blob/master/02-Use_the_Tools_Available.md
 
 msvc_warnings = [
   # Enforce standards conformance.
@@ -49,8 +55,6 @@ msvc_warnings = [
   # Illegal copy-initialization; more than one user-defined conversion has been implicitly applied.
   '/w14928',
 ]
-msvc_info = []
-
 clang_warnings = [
   # Reasonable and standard.
   '-Wall',
@@ -86,19 +90,6 @@ clang_warnings = [
   # Warn when case statements fall-through.
   '-Wimplicit-fallthrough',
 ]
-clang_info = [
-  # Warn if if/else chain has duplicated conditions.
-  '-Wduplicated-cond',
-  # Warn if if/else branches have duplicated code.
-  '-Wduplicated-branches',
-  # Warn about logical operations being used where bitwise were probably wanted.
-  '-Wlogical-op',
-  # Warn if you perform a cast to the same type.
-  '-Wuseless-cast',
-  # Print all template instantiation notes.
-  '-ftemplate-backtrace-limit=0',
-]
-
 gcc_warnings = clang_warnings + [
   # Warn if if/else chain has duplicated conditions.
   '-Wduplicated-cond',
@@ -109,7 +100,13 @@ gcc_warnings = clang_warnings + [
   # Warn if you perform a cast to the same type.
   '-Wuseless-cast',
 ]
-gcc_info = clang_info + [
+
+msvc_info = []
+clang_info = [
+  # Print all template instantiation notes.
+  '-ftemplate-backtrace-limit=0',
+]
+gcc_info = [
   # Print more information about unfulfilled concepts.
   '-fconcepts-diagnostics-depth=3',
 ]
