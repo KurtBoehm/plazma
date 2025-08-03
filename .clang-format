@@ -8,6 +8,7 @@ AlwaysBreakTemplateDeclarations: Yes
 ColumnLimit: 100
 ContinuationIndentWidth: 2
 IndentRequiresClause: false
+IndentCaseLabels: true
 InsertBraces: true
 PointerAlignment: Left
 QualifierAlignment: Custom
