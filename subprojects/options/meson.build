@@ -113,14 +113,6 @@ gcc_info = [
 
 optimization = get_option('optimization')
 warning_level = get_option('warning_level')
-buildtype = get_option('buildtype')
-
-sanitize_opts = ['b_sanitize=address']
-
-debug_opts = []
-if buildtype.startswith('debug')
-  debug_opts += sanitize_opts
-endif
 
 compiler = meson.get_compiler('cpp')
 compiler_id = compiler.get_id()
@@ -169,7 +161,5 @@ if optimization == '3'
   opt_optimization_args += optimization_args
 endif
 
-# All options
-all_opts = debug_opts
 # All arguments
 all_args = experimental_args + info_args + opt_warning_args + opt_optimization_args

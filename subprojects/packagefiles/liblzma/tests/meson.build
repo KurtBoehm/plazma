@@ -20,7 +20,7 @@ foreach t : liblzma_tests
     t,
     executable(
       t,
-      '@0@.c'.format(t),
+      f'@t@.c',
       c_args: '-DHAVE_CONFIG_H',
       include_directories: tinc,
       dependencies: lzma_dep,

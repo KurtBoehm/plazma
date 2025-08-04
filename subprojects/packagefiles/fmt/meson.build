@@ -55,10 +55,5 @@ fmt_header_only_dep = declare_dependency(
 )
 
 if not header_only
-  pkg_mod = import('pkgconfig')
-  pkg_mod.generate(
-    fmt_lib,
-    name: 'fmt',
-    filebase: 'fmt',
-  )
+  import('pkgconfig').generate(fmt_lib, name: 'fmt', filebase: 'fmt')
 endif
