@@ -78,7 +78,7 @@ struct Writer : public thes::FileWriter {
   requires std::is_trivial_v<std::remove_const_t<T>>
   void write(std::span<T> span) {
     const auto* current = reinterpret_cast<const thes::u8*>(span.data());
-    const auto* end = current + span.size();
+    const auto* end = current + span.size_bytes();
     IoBuf out_buf{};
     strm_.next_out = out_buf.data();
     strm_.avail_out = out_buf.size();
