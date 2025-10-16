@@ -136,10 +136,10 @@ struct Reader : public thes::FileReader {
     for (auto it = iter_at(static_cast<lzma_vli>(offset)); it != it_end and it->uoff() < out_end;
          ++it) {
       it->decompress(scratch, buf);
-      const auto common_begin = std::max(offset, it->uoff());
+      const auto common_begin = std::max<std::size_t>(offset, it->uoff());
       const auto buf_begin = common_begin - it->uoff();
       const auto out_begin = common_begin - offset;
-      const auto num = std::min(it->uend(), out_end) - common_begin;
+      const auto num = std::min<std::size_t>(it->uend(), out_end) - common_begin;
       std::memcpy(data + out_begin, buf.data() + buf_begin, num);
     }
   }
