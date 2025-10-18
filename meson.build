@@ -1,4 +1,4 @@
-project('plazma', 'cpp', default_options: ['cpp_std=c++20', 'warning_level=3'])
+project('plazma', 'cpp', default_options: ['cpp_std=c++23', 'warning_level=3'])
 
 fmt_dep = dependency('fmt')
 liblzma_dep = dependency('liblzma')

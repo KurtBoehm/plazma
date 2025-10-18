@@ -5,10 +5,10 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 [wrap-file]
-directory = unordered_dense-4.5.0
-source_url = https://github.com/martinus/unordered_dense/archive/refs/tags/v4.5.0.tar.gz
-source_filename = unordered_dense-4.5.0.tar.gz
-source_hash = 2364ce4bc4c23bd02549bbb3a7572d881684cd46057f3737fd53be53669743aa
+directory = unordered_dense-4.7.0
+source_url = https://github.com/martinus/unordered_dense/archive/refs/tags/v4.7.0.tar.gz
+source_filename = unordered_dense-4.7.0.tar.gz
+source_hash = 73ce8ec4784619be4d6e54f2c4cb95d4d8dbc1fbbf24b5cf1e93b157bfa1043d
 patch_directory = unordered_dense
 
 [provide]

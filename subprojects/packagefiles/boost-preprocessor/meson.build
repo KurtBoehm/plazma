@@ -7,7 +7,7 @@
 project(
   'boost-preprocessor',
   'cpp',
-  version: '1.87.0',
+  version: '1.89.0',
   license: 'BSL-1.0',
 )
 

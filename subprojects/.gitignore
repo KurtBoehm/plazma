@@ -1,8 +1,8 @@
 .DS_Store
+.wraplock
 
 /packagecache/
 
-/expected-*/
 /fmt-*/
 /preprocessor-boost-*/
 /unordered_dense-*/

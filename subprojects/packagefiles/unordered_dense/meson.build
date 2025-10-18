@@ -4,7 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-project('unordered-dense', 'cpp', version: '4.5.0', license: 'MIT')
+project('unordered-dense', 'cpp', version: '4.7.0', license: 'MIT')
 
 install_headers(['include/ankerl/unordered_dense.h'], subdir: 'ankerl')
 
