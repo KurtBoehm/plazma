@@ -52,7 +52,7 @@ struct Writer : public thes::FileWriter {
     THES_POLIS_DIAGNOSTICS_IGNORED_PUSH(gcc, "-Wmissing-field-initializers")
     const lzma_mt mt{
       .flags = 0,
-      .threads = params.thread_num.value_or(lzma_cputhreads()),
+      .threads = params.thread_num.value_or(thes::CpuInfo::num_physical()),
       .block_size = params.block_size.value_or(0),
       .timeout = 0,
       .filters = filters.data(),
