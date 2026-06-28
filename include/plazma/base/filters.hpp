@@ -13,21 +13,24 @@
 #include <lzma.h>
 
 namespace plazma {
+/** RAII wrapper for an array of `lzma_filter` structures. */
 struct Filters {
   Filters() {
     data_[LZMA_FILTERS_MAX].id = LZMA_VLI_UNKNOWN;
   }
+
   Filters(const Filters&) = delete;
   Filters(Filters&&) = delete;
   Filters& operator=(const Filters&) = delete;
   Filters& operator=(Filters&&) = delete;
+
   ~Filters() {
     for (auto& filter : data_) {
       std::free(filter.options);
     }
   }
 
-  lzma_filter* data() {
+  [[nodiscard]] lzma_filter* data() {
     return data_.data();
   }
 

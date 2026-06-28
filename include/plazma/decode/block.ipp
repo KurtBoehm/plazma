@@ -17,7 +17,7 @@
 
 namespace plazma {
 void Block::decompress(thes::DynamicBuffer& scratch, thes::DynamicBuffer& out) {
-  // read the header
+  // Read the header.
   lzma_block block{};
   block.version = 0;
   block.check = check();
@@ -25,11 +25,13 @@ void Block::decompress(thes::DynamicBuffer& scratch, thes::DynamicBuffer& out) {
   Filters filters{};
   block.filters = filters.data();
 
-  reader_.pread(scratch, 1, static_cast<long>(coff()));
+  reader_.pread(scratch, 1, *thes::safe_cast<long>(coff()));
+  THES_POLIS_DIAGNOSTICS_IGNORED_PUSH(gnuc, "-Wold-style-cast")
   block.header_size = lzma_block_header_size_decode(scratch[0]);
+  THES_POLIS_DIAGNOSTICS_IGNORED_POP(gnuc)
   scratch.resize(block.header_size);
   reader_.pread(std::span{scratch.data() + 1, block.header_size - 1},
-                static_cast<long>(coff()) + 1);
+                *thes::safe_cast<long>(coff()) + 1);
 
   lzma_ret err = lzma_block_header_decode(&block, nullptr, scratch.data_u8());
   if (err == LZMA_OPTIONS_ERROR) {
@@ -46,7 +48,7 @@ void Block::decompress(thes::DynamicBuffer& scratch, thes::DynamicBuffer& out) {
     throw Exception(fmt::format("Error in block header: {}", err));
   }
 
-  // decode the block
+  // Decode the block.
   Stream s{};
   if (lzma_block_decoder(&s, &block) != LZMA_OK) {
     throw Exception("error initializing block decoder");
@@ -55,7 +57,7 @@ void Block::decompress(thes::DynamicBuffer& scratch, thes::DynamicBuffer& out) {
   out.resize(usize());
   s.next_out = out.data_u8();
   s.avail_out = out.size();
-  decode(s, reader_, scratch, coff() + block.header_size);
+  decode(s, reader_, scratch, *thes::safe_cast<long>(coff() + block.header_size));
 }
 } // namespace plazma
 

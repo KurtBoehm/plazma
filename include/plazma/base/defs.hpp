@@ -14,9 +14,11 @@
 #include "thesauros/format.hpp"
 
 namespace plazma {
+/** Chunk size used for buffered LZMA I/O. */
 inline constexpr std::size_t chunk_size = 4096;
-}
+} // namespace plazma
 
+/** fmtlib formatter for `lzma_ret` error codes. */
 template<>
 struct fmt::formatter<lzma_ret> : formatter<fmt::string_view> {
   auto format(lzma_ret ret, fmt::format_context& ctx) const {

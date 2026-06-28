@@ -20,6 +20,7 @@
 #include "plazma/base/stream.hpp"
 
 namespace plazma {
+/** Streams compressed data from `fh` through `s` until the end of the LZMA stream. */
 inline void decode(Stream& s, thes::FileReader& fh, thes::DynamicBuffer& scratch,
                    std::optional<long> opt_off = std::nullopt) {
   long off = opt_off.value_or(fh.tell());
@@ -29,7 +30,7 @@ inline void decode(Stream& s, thes::FileReader& fh, thes::DynamicBuffer& scratch
   while (err != LZMA_STREAM_END) {
     if (s.avail_in == 0) {
       s.avail_in = fh.try_pread(scratch, chunk_size, off);
-      off += static_cast<long>(scratch.size());
+      off += *thes::safe_cast<long>(s.avail_in);
       s.next_in = scratch.data_u8();
     }
     err = lzma_code(&s, LZMA_RUN);

@@ -12,6 +12,7 @@
 #include <utility>
 
 namespace plazma {
+/** Simple exception type carrying a formatted message. */
 struct Exception : public std::exception {
   explicit Exception(std::string msg) : message_(std::move(msg)) {}
 

@@ -10,6 +10,7 @@
 #include <lzma.h>
 
 namespace plazma {
+/** RAII wrapper around `lzma_stream` that automatically calls `lzma_end`. */
 struct Stream : public lzma_stream {
   Stream() : lzma_stream(LZMA_STREAM_INIT) {}
   Stream(const Stream&) = delete;

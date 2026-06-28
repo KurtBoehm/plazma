@@ -26,16 +26,17 @@
 #include "plazma/base.hpp"
 
 namespace plazma {
+/** Parameters controlling LZMA writer behavior. */
 struct WriterParams {
   const std::optional<thes::u32> preset{};
   std::optional<thes::u64> block_size{};
   std::optional<thes::u32> thread_num{};
 };
 
-// Based on doc/04_compress_easy_mt.c
+/** Multi-threaded LZMA writer based on `doc/04_compress_easy_mt.c`. */
 struct Writer : public thes::FileWriter {
   static constexpr std::size_t io_buffer_size = (BUFSIZ <= 1024) ? 8192 : (BUFSIZ & ~7U);
-  using IoBuf = std::array<uint8_t, io_buffer_size>;
+  using IoBuf = std::array<std::uint8_t, io_buffer_size>;
 
   explicit Writer(const std::filesystem::path& dst_path, WriterParams params = {})
       : thes::FileWriter(dst_path) {
@@ -74,8 +75,9 @@ struct Writer : public thes::FileWriter {
     lzma_end(&strm_);
   }
 
+  /** Compresses and writes all bytes in `span` to the underlying file. */
   template<typename T>
-  requires std::is_trivial_v<std::remove_const_t<T>>
+  requires(std::is_trivial_v<std::remove_const_t<T>>)
   void write(std::span<T> span) {
     const auto* current = reinterpret_cast<const thes::u8*>(span.data());
     const auto* end = current + span.size_bytes();

@@ -14,6 +14,7 @@
 namespace plazma {
 struct Reader;
 
+/** Lightweight view over a single LZMA block. */
 struct Block {
   explicit Block(Reader& reader, lzma_index_iter it) : reader_(reader), it_(it) {}
 
@@ -40,7 +41,10 @@ struct Block {
     return uoff() + usize();
   }
 
+  /** Decompresses the block into `out` using `scratch` as temporary storage. */
   void decompress(thes::DynamicBuffer& scratch, thes::DynamicBuffer& out);
+
+  /** Decompresses the block into `out` with an internal scratch buffer. */
   void decompress(thes::DynamicBuffer& out) {
     thes::DynamicBuffer scratch{};
     decompress(scratch, out);

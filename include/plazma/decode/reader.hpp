@@ -27,9 +27,12 @@
 #include "plazma/decode/read-index.hpp"
 
 namespace plazma {
+/** Random-access reader for LZMA files exposing block-level access. */
 struct Reader : public thes::FileReader {
+  /** Sentinel type used to mark the end of block iteration. */
   struct BlockSentinel {};
 
+  /** Forward iterator over non-empty blocks in the index. */
   struct BlockIter {
     using value_type = Block;
     using reference = Block;
@@ -113,6 +116,7 @@ struct Reader : public thes::FileReader {
     lzma_index_end(index_, nullptr);
   }
 
+  /** Returns an iterator positioned at the block covering uncompressed offset `off`. */
   [[nodiscard]] BlockIter iter_at(lzma_vli off) {
     BlockIter iter(*this, index_);
     const auto ret = lzma_index_iter_locate(&iter.raw(), off);
@@ -123,7 +127,7 @@ struct Reader : public thes::FileReader {
   }
 
   template<typename T>
-  requires std::is_trivial_v<T>
+  requires(std::is_trivial_v<T>)
   void load_segment(std::size_t off, std::span<T> out) {
     const auto offset = off * sizeof(T);
     const auto size = out.size() * sizeof(T);
@@ -133,8 +137,8 @@ struct Reader : public thes::FileReader {
     const auto out_end = offset + size;
     thes::DynamicBuffer scratch{};
     thes::DynamicBuffer buf{};
-    for (auto it = iter_at(static_cast<lzma_vli>(offset)); it != it_end and it->uoff() < out_end;
-         ++it) {
+    for (auto it = iter_at(*thes::safe_cast<lzma_vli>(offset));
+         it != it_end and it->uoff() < out_end; ++it) {
       it->decompress(scratch, buf);
       const auto common_begin = std::max<std::size_t>(offset, it->uoff());
       const auto buf_begin = common_begin - it->uoff();
