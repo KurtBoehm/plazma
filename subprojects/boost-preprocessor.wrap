@@ -5,10 +5,10 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 [wrap-file]
-directory = preprocessor-boost-1.89.0
-source_url = https://github.com/boostorg/preprocessor/archive/refs/tags/boost-1.89.0.tar.gz
-source_filename = preprocessor-boost-1.89.0.tar.gz
-source_hash = 53de1b2e64706b73903d9f3957525fa8fa620445ec0d596aa6fb8335af6f45c0
+directory = preprocessor-boost-1.90.0
+source_url = https://github.com/boostorg/preprocessor/archive/refs/tags/boost-1.90.0.tar.gz
+source_filename = preprocessor-boost-1.90.0.tar.gz
+source_hash = 4a951411d94423e74a4f1df5b1aa5d51996dbfbf01bec35bc51c53af4707bda3
 patch_directory = boost-preprocessor
 
 [provide]

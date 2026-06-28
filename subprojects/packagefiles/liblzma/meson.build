@@ -4,18 +4,28 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-# liblzma is what upstream uses for their pkg-config name
+################################################################################
+# Project metadata and global arguments
+################################################################################
+
+# “liblzma” is what upstream uses for their pkg-config name.
 project(
   'liblzma',
   'c',
-  version: '5.8.1',
-  license: 'pd/lgpl2/gpl2/gpl3',
+  version: '5.8.2',
+  license: '0BSD AND LGPL-2.1-or-later AND GPL-2.0-or-later AND GPL-3.0-or-later',
 )
 
 add_project_arguments('-D_GNU_SOURCE', language: 'c')
 
 cc = meson.get_compiler('c')
 cdata = configuration_data()
+proj_version = meson.project_version()
+host_system = host_machine.system()
+
+################################################################################
+# Feature detection: headers, functions, macros
+################################################################################
 
 check_headers = [
   'byteswap.h',
@@ -107,13 +117,15 @@ endforeach
 
 foreach h : check_headers
   if cc.has_header(h)
-    cdata.set('HAVE_@0@'.format(h.underscorify().to_upper()), 1)
+    h_name = h.underscorify().to_upper()
+    cdata.set(f'HAVE_@h_name@', 1)
   endif
 endforeach
 
 foreach m, h : macros
   if cc.has_header_symbol(h, m)
-    cdata.set('HAVE_@0@'.format(m.underscorify().to_upper()), 1)
+    m_name = m.underscorify().to_upper()
+    cdata.set(f'HAVE_@m_name@', 1)
   endif
 endforeach
 
@@ -121,13 +133,17 @@ if cc.check_header('immintrin.h')
   cdata.set('HAVE_IMMINTRIN_H', 1)
 endif
 
-if cdata.has('HAVE_IMMINTRIN_H') and cc.has_header_symbol('immintrin.h', '_mm_movemask_epi8')
+if (
+  cdata.has('HAVE_IMMINTRIN_H')
+  and cc.has_header_symbol('immintrin.h', '_mm_movemask_epi8')
+)
   cdata.set('HAVE__MM_MOVEMASK_EPI8', 1)
 endif
 
 foreach f : functions
   if cc.has_function(f)
-    cdata.set('HAVE_@0@'.format(f.underscorify().to_upper()), 1)
+    f_name = f.underscorify().to_upper()
+    cdata.set(f'HAVE_@f_name@', 1)
   endif
 endforeach
 
@@ -147,8 +163,9 @@ if cc.has_header_symbol('time.h', 'CLOCK_MONOTONIC')
   cdata.set('HAVE_DECL_CLOCK_MONOTONIC', 1)
 endif
 
+# TODO Autodetection for “optreset” is disabled for now.
 if false
-  #if cc.has_header_symbol('getopt.h', 'optreset', args: '-D_BSD_SOURCE')
+  # if cc.has_header_symbol('getopt.h', 'optreset', args: '-D_BSD_SOURCE')
   cdata.set('HAVE_OPTRESET', 1)
 endif
 
@@ -172,7 +189,7 @@ if cc.has_function('pthread_condattr_setclock', dependencies: thread_dep)
   cdata.set('HAVE_PTHREAD_CONDATTR_SETCLOCK', 1)
 endif
 
-#if cc.has_function('clock_gettime', dependencies: thread_dep)
+# if cc.has_function('clock_gettime', dependencies: thread_dep)
 if cc.has_function('clock_gettime')
   cdata.set('HAVE_CLOCK_GETTIME', 1)
 endif
@@ -184,11 +201,11 @@ if cc.compiles(
   cdata.set('HAVE_PTHREAD_PRIO_INHERIT', 1)
 endif
 
-if host_machine.system() != 'windows' and thread_dep.found()
+if host_system != 'windows' and thread_dep.found()
   cdata.set('MYTHREAD_POSIX', 1)
 endif
 
-if host_machine.system() == 'windows' and thread_dep.found()
+if host_system == 'windows' and thread_dep.found()
   cdata.set('MYTHREAD_VISTA', 1)
 endif
 
@@ -204,11 +221,16 @@ if cc.has_member(
   cdata.set('HAVE_STRUCT_STAT_ST_ATIM_TV_NSEC', 1)
 endif
 
-if meson.version().version_compare('>= 0.59')
+################################################################################
+# Native language support
+################################################################################
+
+if meson.version().version_compare('>=0.59')
   nls_dep = dependency('intl', required: get_option('nls'))
 else
   nls_dep = dependency('', required: false)
 endif
+
 if nls_dep.found()
   cdata.set10('ENABLE_NLS', true)
   cdata.set10(
@@ -219,30 +241,36 @@ if nls_dep.found()
     'HAVE_GETTEXT',
     cc.has_function('dcgettext', dependencies: nls_dep),
   )
-  add_project_arguments(
-    '-DLOCALEDIR="@0@"'.format(get_option('prefix') / get_option('localedir')),
-    language: 'c',
-  )
+
+  localedir = get_option('prefix') / get_option('localedir')
+  add_project_arguments(f'-DLOCALEDIR="@localedir@"', language: 'c')
 endif
+
+################################################################################
+# Encoder/decoder options
+################################################################################
 
 foreach i : decoders + encoders
   if get_option(i)
-    cdata.set('HAVE_@0@'.format(i.underscorify().to_upper()), 1)
+    i_name = i.underscorify().to_upper()
+    cdata.set(f'HAVE_@i_name@', 1)
   endif
 endforeach
 
+################################################################################
+# Linker arguments and build flags
+################################################################################
+
 largs = []
-if host_machine.system() == 'linux'
+src_root = meson.current_source_dir()
+
+if host_system == 'linux'
   largs += cc.get_supported_link_arguments(
-    '-Wl,--version-script,@0@/src/liblzma/liblzma_linux.map'.format(
-      meson.current_source_dir(),
-    ),
+    f'-Wl,--version-script,@src_root@/src/liblzma/liblzma_linux.map',
   )
-elif host_machine.system() == 'freebsd'
+elif host_system == 'freebsd'
   largs += cc.get_supported_link_arguments(
-    '-Wl,--version-script,@0@/src/liblzma/liblzma_generic.map'.format(
-      meson.current_source_dir(),
-    ),
+    f'-Wl,--version-script,@src_root@/src/liblzma/liblzma_generic.map',
   )
 endif
 
@@ -253,17 +281,22 @@ endif
 cdata.set10('HAVE__BOOL', cc.has_type('_Bool'))
 cdata.set10('HAVE_VISIBILITY', cc.has_function_attribute('visibility'))
 
+################################################################################
+# Package metadata for config.h
+################################################################################
+
 cdata.set_quoted('PACKAGE', 'xz')
 cdata.set_quoted('PACKAGE_TARNAME', 'xz')
-cdata.set_quoted('VERSION', meson.project_version())
-cdata.set_quoted('PACKAGE_VERSION', meson.project_version())
+cdata.set_quoted('VERSION', proj_version)
+cdata.set_quoted('PACKAGE_VERSION', proj_version)
 cdata.set_quoted('PACKAGE_NAME', 'XZ Utils')
-cdata.set_quoted(
-  'PACKAGE_STRING',
-  'XZ Utils @0@'.format(meson.project_version()),
-)
+cdata.set_quoted('PACKAGE_STRING', f'XZ Utils @proj_version@')
 cdata.set_quoted('PACKAGE_URL', 'https://tukaani.org/xz/')
 cdata.set_quoted('PACKAGE_BUGREPORT', 'lasse.collin@tukaani.org')
+
+# ==============================================================================
+# Hard-coded feature toggles
+# ==============================================================================
 
 cdata.set('ASSUME_RAM', 128)
 cdata.set('HAVE_CHECK_CRC32', 1)
@@ -285,10 +318,10 @@ cdata.set('_HPUX_ALT_XOPEN_SOCKET_API', 1)
 cdata.set('_NETBSD_SOURCE', 1)
 cdata.set('_OPENBSD_SOURCE', 1)
 cdata.set('_POSIX_PTHREAD_SEMANTICS', 1)
-cdata.set('__STDC_WANT_IEC_60559_ATTRIBS_EXT__ ', 1)
+cdata.set('__STDC_WANT_IEC_60559_ATTRIBS_EXT__', 1)
 cdata.set('__STDC_WANT_IEC_60559_BFP_EXT__', 1)
 cdata.set('__STDC_WANT_IEC_60559_DFP_EXT__', 1)
-cdata.set('__STDC_WANT_IEC_60559_FUNCS_EXT__ ', 1)
+cdata.set('__STDC_WANT_IEC_60559_FUNCS_EXT__', 1)
 cdata.set('__STDC_WANT_IEC_60559_TYPES_EXT__', 1)
 cdata.set('__STDC_WANT_LIB_EXT2__', 1)
 cdata.set('__STDC_WANT_MATH_SPEC_FUNCS__', 1)
@@ -299,6 +332,10 @@ configure_file(
   output: 'config.h',
   configuration: cdata,
 )
+
+################################################################################
+# Subdirectories
+################################################################################
 
 confinc = include_directories('.')
 subdir('src')

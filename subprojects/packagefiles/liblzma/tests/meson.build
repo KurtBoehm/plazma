@@ -21,9 +21,9 @@ foreach t : liblzma_tests
     executable(
       t,
       f'@t@.c',
-      c_args: '-DHAVE_CONFIG_H',
       include_directories: tinc,
       dependencies: lzma_dep,
+      c_args: '-DHAVE_CONFIG_H',
     ),
   )
 endforeach

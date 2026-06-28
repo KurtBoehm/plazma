@@ -4,12 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-project(
-  'boost-preprocessor',
-  'cpp',
-  version: '1.89.0',
-  license: 'BSL-1.0',
-)
+project('boost-preprocessor', 'cpp', version: '1.90.0', license: 'BSL-1.0')
 
 boost_preprocessor_dep = declare_dependency(
   include_directories: include_directories('include'),

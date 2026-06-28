@@ -31,7 +31,7 @@ xzinc = include_directories('../common', '../liblzma/api', '../../lib')
 xz = executable(
   'xz',
   sources,
-  c_args: ['-DHAVE_CONFIG_H'],
   include_directories: [confinc, xzinc],
   dependencies: lzma_dep,
+  c_args: ['-DHAVE_CONFIG_H'],
 )

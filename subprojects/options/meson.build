@@ -4,7 +4,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-project('meson-options')
+project('meson-options', 'cpp')
+
+################################################################################
+# Warning and diagnostic flag sets
+################################################################################
 
 # The warnings are based on those listed here:
 # https://github.com/lefticus/cppbestpractices/blob/master/02-Use_the_Tools_Available.md
@@ -14,47 +18,48 @@ msvc_warnings = [
   '/permissive-',
   # All reasonable warnings.
   '/W4',
-  # 'identifier': Conversion from 'type1' to 'type1', possible loss of data.
+  # “identifier”: Conversion from “type1” to “type1”, possible loss of data.
   '/w14242',
-  # 'operator': Conversion from 'type1:field_bits' to 'type2:field_bits', possible loss of data.
+  # “operator”: Conversion from “type1:field_bits” to “type2:field_bits”, possible loss of data.
   '/w14254',
-  # 'function': Member function does not override any base class virtual member function.
+  # “function”: Member function does not override any base class virtual member function.
   '/w14263',
-  # 'classname': Class has virtual functions, but destructor is not virtual.
+  # “classname”: Class has virtual functions, but destructor is not virtual.
   #              Instances of this class may not be destructed correctly.
   '/w14265',
-  # 'operator': Unsigned/negative constant mismatch.
+  # “operator”: Unsigned/negative constant mismatch.
   '/w14287',
-  # 'variable': loop control variable declared in the for-loop is used outside the for-loop scope.
+  # “variable”: Loop control variable declared in the for-loop is used outside the for-loop scope.
   '/we4289',
-  # 'operator': expression is always 'boolean_value'.
+  # “operator”: Expression is always “boolean_value”.
   '/w14296',
-  # 'variable': pointer truncation from 'type1' to 'type2'.
+  # “variable”: Pointer truncation from “type1” to “type2”.
   '/w14311',
   # Expression before comma evaluates to a function which is missing an argument list.
   '/w14545',
   # Function call before comma missing argument list.
   '/w14546',
-  # 'operator': Operator before comma has no effect; expected operator with side-effect.
+  # “operator”: Operator before comma has no effect; expected operator with side-effect.
   '/w14547',
-  # 'operator': Operator before comma has no effect; did you intend 'operator'?.
+  # “operator”: Operator before comma has no effect; did you intend “operator”?.
   '/w14549',
   # Expression has no effect; expected expression with side-effect.
   '/w14555',
-  # pragma warning: There is no warning number 'number'.
+  # pragma warning: There is no warning number “number”.
   '/w14619',
   # Enable warning on thread unsafe static member initialization.
   '/w14640',
-  # Conversion from 'type1' to 'type_2' is sign-extended.
+  # Conversion from “type1” to “type_2” is sign-extended.
   # This may cause unexpected runtime behavior.
   '/w14826',
-  # Wide string literal cast to 'LPSTR'.
+  # Wide string literal cast to “LPSTR”.
   '/w14905',
-  # String literal cast to 'LPWSTR'.
+  # String literal cast to “LPWSTR”.
   '/w14906',
   # Illegal copy-initialization; more than one user-defined conversion has been implicitly applied.
   '/w14928',
 ]
+
 clang_warnings = [
   # Reasonable and standard.
   '-Wall',
@@ -67,7 +72,7 @@ clang_warnings = [
   # Warn the user if a class with virtual functions has a non-virtual destructor.
   # This helps catch hard to track down memory errors.
   '-Wnon-virtual-dtor',
-  # Warn for c-style casts.
+  # Warn for C-style casts.
   '-Wold-style-cast',
   # Warn for potential performance problem casts.
   '-Wcast-align',
@@ -85,11 +90,12 @@ clang_warnings = [
   '-Wnull-dereference',
   # Warn if float is implicitly promoted to double.
   '-Wdouble-promotion',
-  # Warn on security issues around functions that format output (i.e. printf).
+  # Warn on security issues around functions that format output (e.g., printf).
   '-Wformat=2',
   # Warn when case statements fall-through.
   '-Wimplicit-fallthrough',
 ]
+
 gcc_warnings = clang_warnings + [
   # Warn if if/else chain has duplicated conditions.
   '-Wduplicated-cond',
@@ -102,14 +108,20 @@ gcc_warnings = clang_warnings + [
 ]
 
 msvc_info = []
+
 clang_info = [
   # Print all template instantiation notes.
   '-ftemplate-backtrace-limit=0',
 ]
+
 gcc_info = [
   # Print more information about unfulfilled concepts.
   '-fconcepts-diagnostics-depth=3',
 ]
+
+################################################################################
+# Option handling and compiler detection
+################################################################################
 
 optimization = get_option('optimization')
 warning_level = get_option('warning_level')
@@ -118,48 +130,56 @@ compiler = meson.get_compiler('cpp')
 compiler_id = compiler.get_id()
 is_gcc_compatible = ['gcc', 'clang'].contains(compiler_id)
 
-# Determine the appropriate warnings
+################################################################################
+# Construct compiler flag sets
+################################################################################
+
 warning_args = []
 info_args = []
+
 if compiler_id == 'clang'
   warning_args += clang_warnings
   info_args += clang_info
-endif
-if compiler_id == 'gcc'
+elif compiler_id == 'gcc'
   warning_args += gcc_warnings
   info_args += gcc_info
-endif
-if compiler_id == 'msvc'
+elif compiler_id == 'msvc'
   warning_args += msvc_warnings
   info_args += msvc_info
 endif
 
-# Add warnings on sufficient warning levels
+# Add warnings on sufficient warning levels.
 opt_warning_args = []
 if warning_level == '3'
   opt_warning_args += warning_args
 endif
 
-experimental_args = []
-# Add experimental flags if clang is used
-if compiler_id == 'clang'
-  major_version = compiler.version().split('.')[0].to_int()
-  if major_version > 14
-    experimental_args += ['-fexperimental-library']
-  endif
+# Add arguments that enable building at all (because defaults on Windows are poor).
+fix_args = []
+if target_machine.system() == 'windows'
+  # Debug builds on Windows may fail because there are too many sections in the object file.
+  fix_args += ['-Wa,-mbig-obj']
 endif
 
-# Determine architecture-specific optimizations
+# Determine architecture-specific optimizations.
 optimization_args = []
-if is_gcc_compatible and compiler.compiles('int dummy;', name: 'Check -march=native', args: ['-march=native'])
+if is_gcc_compatible and compiler.compiles(
+  'int dummy;',
+  name: 'Check “-march=native” support',
+  args: ['-march=native'],
+)
   optimization_args += ['-march=native']
 endif
 
-# Add architecture-specific optimizations
+# Add architecture-specific optimizations.
 opt_optimization_args = []
 if optimization == '3'
   opt_optimization_args += optimization_args
 endif
 
-# All arguments
-all_args = experimental_args + info_args + opt_warning_args + opt_optimization_args
+################################################################################
+# Public argument sets
+################################################################################
+
+basic_args = info_args + opt_warning_args + fix_args
+all_args = info_args + opt_warning_args + fix_args + opt_optimization_args
