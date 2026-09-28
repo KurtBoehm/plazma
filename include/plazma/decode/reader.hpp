@@ -17,11 +17,12 @@
 
 #include <lzma.h>
 
-#include "thesauros/containers.hpp"
+#include "thesauros/containers/dynamic-buffer.hpp"
 #include "thesauros/format.hpp"
-#include "thesauros/io.hpp"
-#include "thesauros/types.hpp"
-#include "thesauros/utility.hpp"
+#include "thesauros/io/file-reader.hpp"
+#include "thesauros/math/integer-cast.hpp"
+#include "thesauros/types/primitives.hpp"
+#include "thesauros/utility/arrow-proxy.hpp"
 
 #include "plazma/base.hpp"
 #include "plazma/decode/read-index.hpp"
@@ -133,7 +134,7 @@ struct Reader : public thes::FileReader {
     const auto size = out.size() * sizeof(T);
     auto* data = reinterpret_cast<std::byte*>(out.data());
 
-    auto it_end = end();
+    const auto it_end = end();
     const auto out_end = offset + size;
     thes::DynamicBuffer scratch{};
     thes::DynamicBuffer buf{};

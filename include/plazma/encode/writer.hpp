@@ -19,16 +19,17 @@
 #include <lzma.h>
 
 #include "thesauros/format.hpp"
-#include "thesauros/io.hpp"
-#include "thesauros/macropolis.hpp"
-#include "thesauros/types.hpp"
+#include "thesauros/io/file-writer.hpp"
+#include "thesauros/macropolis/diagnostics.hpp"
+#include "thesauros/resources/cpu-info.hpp"
+#include "thesauros/types/primitives.hpp"
 
 #include "plazma/base.hpp"
 
 namespace plazma {
 /** Parameters controlling LZMA writer behavior. */
 struct WriterParams {
-  const std::optional<thes::u32> preset{};
+  std::optional<thes::u32> preset{};
   std::optional<thes::u64> block_size{};
   std::optional<thes::u32> thread_num{};
 };
@@ -45,10 +46,12 @@ struct Writer : public thes::FileWriter {
       throw Exception("Getting preset failed!");
     }
 
-    std::array<lzma_filter, LZMA_FILTERS_MAX + 1> filters{{
-      {.id = LZMA_FILTER_LZMA2, .options = &opt_lzma},
-      {.id = LZMA_VLI_UNKNOWN, .options = nullptr},
-    }};
+    std::array<lzma_filter, LZMA_FILTERS_MAX + 1> filters{
+      {
+        {.id = LZMA_FILTER_LZMA2, .options = &opt_lzma},
+        {.id = LZMA_VLI_UNKNOWN, .options = nullptr},
+      },
+    };
 
     THES_POLIS_DIAGNOSTICS_IGNORED_PUSH(gcc, "-Wmissing-field-initializers")
     const lzma_mt mt{

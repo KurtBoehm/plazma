@@ -7,6 +7,8 @@
 #ifndef INCLUDE_PLAZMA_BASE_BLOCK_HPP
 #define INCLUDE_PLAZMA_BASE_BLOCK_HPP
 
+#include <memory>
+
 #include <lzma.h>
 
 #include "thesauros/containers.hpp"
@@ -16,7 +18,7 @@ struct Reader;
 
 /** Lightweight view over a single LZMA block. */
 struct Block {
-  explicit Block(Reader& reader, lzma_index_iter it) : reader_(reader), it_(it) {}
+  explicit Block(Reader& reader, lzma_index_iter it) : reader_(std::addressof(reader)), it_(it) {}
 
   [[nodiscard]] lzma_index_iter raw() const {
     return it_;
@@ -51,7 +53,7 @@ struct Block {
   }
 
 private:
-  Reader& reader_;
+  Reader* reader_;
   lzma_index_iter it_;
 };
 } // namespace plazma

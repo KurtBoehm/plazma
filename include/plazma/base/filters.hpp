@@ -25,7 +25,7 @@ struct Filters {
   Filters& operator=(Filters&&) = delete;
 
   ~Filters() {
-    for (auto& filter : data_) {
+    for (const auto& filter : data_) {
       std::free(filter.options);
     }
   }

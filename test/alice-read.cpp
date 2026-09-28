@@ -42,9 +42,9 @@ int main(int /*argc*/, const char* const* const argv) {
     std::cout << thread_num << '\n';
     std::string str(xz_size + 1, '\0');
 
-    thes::FixedStdThreadPool pool(thread_num);
+    const thes::FixedStdThreadPool pool(thread_num);
     thes::UniformIndexSegmenter seg{xz_size, pool.thread_num()};
-    pool.execute([&](const std::size_t idx) {
+    pool.execute([&](const std::size_t idx) noexcept {
       plazma::Reader reader{xz_path};
       const auto iota = seg.segment_range(idx);
       const auto begin = iota.begin_value();

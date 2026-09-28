@@ -15,10 +15,11 @@
 
 #include <lzma.h>
 
-#include "thesauros/containers.hpp"
+#include "thesauros/containers/dynamic-buffer.hpp"
 #include "thesauros/io.hpp"
-#include "thesauros/memory.hpp"
-#include "thesauros/types.hpp"
+#include "thesauros/math/integer-cast.hpp"
+#include "thesauros/memory/byte-read.hpp"
+#include "thesauros/types/primitives.hpp"
 
 #include "plazma/base/defs.hpp"
 #include "plazma/base/exception.hpp"
@@ -68,7 +69,7 @@ inline lzma_index* read_index(thes::FileReader& fh) {
 
     std::array<thes::u8, LZMA_STREAM_HEADER_SIZE> footer{};
     fh.read(footer);
-    lzma_ret err = lzma_stream_footer_decode(&flags, footer.data());
+    const lzma_ret err = lzma_stream_footer_decode(&flags, footer.data());
     if (err != LZMA_OK) {
       throw Exception("Bad Footer");
     }
